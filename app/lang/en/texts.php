@@ -75,6 +75,8 @@ return array(
   'enable_invoice_tax' => 'Enable specifying an <b>invoice tax</b>',
   'enable_line_item_tax' => 'Enable specifying <b>line item taxes</b>',
 
+  'provider' => 'Provider',
+  
   // navigation
   'dashboard' => 'Dashboard',
   'clients' => 'Clients',
@@ -134,7 +136,8 @@ return array(
   'show_archived_deleted' => 'Show archived/deleted',
   'filter' => 'Filter',
   'new_client' => 'New Client',
-  'new_invoice' => 'New Invoice',
+  'new_invoice' => 'New Client Invoice',
+  'new_provider_invoice' => 'New Provider Invoice',
   'new_payment' => 'New Payment',
   'new_credit' => 'New Credit',
   'contact' => 'Contact',

@@ -64,7 +64,7 @@
         @if (Utils::isPro())
           {{ HTML::menu_link('quote') }}
         @endif
-        {{ HTML::menu_link('invoice') }}
+		{{ HTML::double_menu_link('invoice') }} <!-- Modification du menu pour avoir 2 sous menus-->
         {{ HTML::menu_link('payment') }}
         {{ HTML::menu_link('credit') }}
       </ul>

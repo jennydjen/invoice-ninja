@@ -20,7 +20,7 @@ class InvoiceRepository
             ->where('contacts.deleted_at', '=', null)
     				->where('invoices.is_recurring', '=', false)    			
     				->where('contacts.is_primary', '=', true)	
-  					->select('clients.public_id as client_public_id', 'invoice_number', 'invoice_status_id', 'clients.name as client_name', 'invoices.public_id', 'amount', 'invoices.balance', 'invoice_date', 'due_date', 'invoice_statuses.name as invoice_status_name', 'clients.currency_id', 'contacts.first_name', 'contacts.last_name', 'contacts.email', 'quote_id', 'quote_invoice_id');
+  					->select('clients.public_id as client_public_id', 'invoice_number', 'invoice_status_id', 'clients.name as client_name', 'invoices.public_id', 'amount', 'invoices.balance', 'invoice_date', 'due_date', 'invoice_statuses.name as invoice_status_name', 'clients.currency_id', 'contacts.first_name', 'contacts.last_name', 'contacts.email', 'quote_id', 'quote_invoice_id','provider');
 
       if (!\Session::get('show_trash:invoice'))
       {
@@ -119,8 +119,8 @@ class InvoiceRepository
                 '.trans('texts.select').' <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" role="menu">
-              <li><a href="' . \URL::to("{$entityType}s/".$model->public_id.'/edit') . '">'.trans("texts.edit_{$entityType}").'</a></li>
-              <li><a href="' . \URL::to("{$entityType}s/".$model->public_id.'/clone') . '">'.trans("texts.clone_{$entityType}").'</a></li>
+              <li><a href="' . \URL::to("{$entityType}s/".($model->provider ? "provider/" : "").$model->public_id.'/edit') . '">'.trans("texts.edit_{$entityType}").'</a></li>
+              <li><a href="' . \URL::to("{$entityType}s/".($model->provider ? "provider/" : "").$model->public_id.'/clone') . '">'.trans("texts.clone_{$entityType}").'</a></li>
               <li class="divider"></li>';
 
             if ($model->invoice_status_id < INVOICE_STATUS_SENT) 
@@ -303,6 +303,12 @@ class InvoiceRepository
     }
 
     $invoice->amount = $total;
+	
+	if(isset($data['provider'])){
+		$invoice->provider = $data['provider'];
+	}else{
+		$invoice->provider = false;
+	}
 		$invoice->save();
 
     $invoice->invoice_items()->forceDelete();

@@ -109,6 +109,16 @@ Route::group(array('before' => 'auth'), function()
   Route::get('invoices/create/{client_id?}', 'InvoiceController@create');
   Route::get('invoices/{public_id}/clone', 'InvoiceController@cloneInvoice');
   Route::post('invoices/bulk', 'InvoiceController@bulk');
+  
+  /**
+  * Ajout des routes possibles pour les factures de fournisseur
+  */
+  Route::resource('invoices/provider', 'ProviderInvoiceController');
+  Route::get('api/invoices/provider/{client_id?}', array('as'=>'api.provider.invoices', 'uses'=>'ProviderInvoiceController@getDatatable')); 
+  Route::get('invoices/provider/create/{client_id?}', 'ProviderInvoiceController@create');
+  Route::get('invoices/provider/{public_id}/clone', 'ProviderInvoiceController@cloneInvoice');
+  Route::post('invoices/provider/bulk', 'ProviderInvoiceController@bulk');
+  
 
   Route::get('quotes/create/{client_id?}', 'QuoteController@create');
   Route::get('quotes/{public_id}/clone', 'InvoiceController@cloneInvoice');
@@ -139,6 +149,7 @@ Route::group(array('prefix' => 'api/v1', 'before' => 'auth.basic'), function()
   Route::resource('ping', 'ClientApiController@ping');
   Route::resource('clients', 'ClientApiController');
   Route::resource('invoices', 'InvoiceApiController');
+  Route::resource('invoices/provider', 'ProviderInvoiceApiController');
   Route::resource('quotes', 'QuoteApiController');
   Route::resource('payments', 'PaymentApiController');
   Route::post('api/hooks', 'IntegrationController@subscribe');
@@ -302,6 +313,24 @@ HTML::macro('menu_link', function($type) {
            <a href="'.URL::to($types).'" class="dropdown-toggle">'.trans("texts.$types").'</a>
            <ul class="dropdown-menu" id="menu1">
              <li><a href="'.URL::to($types.'/create').'">'.trans("texts.new_$type").'</a></li>
+            </ul>
+          </li>';
+});
+
+/**
+* Création du sous menu avec 2 actions possibles
+*/
+HTML::macro('double_menu_link', function($type) {
+  $types = $type.'s';
+  $Type = ucfirst($type);
+  $Types = ucfirst($types);
+  $class = ( Request::is($types) || Request::is('*'.$type.'*')) && !Request::is('*advanced_settings*') ? ' active' : '';
+
+  return '<li class="dropdown '.$class.'">
+           <a href="'.URL::to($types).'" class="dropdown-toggle">'.trans("texts.$types").'</a>
+           <ul class="dropdown-menu" id="menu1">
+             <li><a href="'.URL::to($types.'/create').'">'.trans("texts.new_$type").'</a></li>
+			 <li><a href="'.URL::to($types.'/provider/create').'">'.trans("texts.new_provider_$type").'</a></li>
             </ul>
           </li>';
 });

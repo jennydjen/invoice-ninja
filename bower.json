@@ -21,6 +21,7 @@
     "lightbox2": "~2.7.1"
   },
   "resolutions": {
-    "jquery": "~1.11"
+    "jquery": "~1.11",
+    "datatables": "1_9"
   }
 }

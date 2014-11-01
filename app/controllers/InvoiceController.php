@@ -231,7 +231,7 @@ class InvoiceController extends \BaseController {
 		return View::make('invoices.edit', $data);
 	}
 
-	private static function getViewModel()
+	protected static function getViewModel()
 	{
 		return [
 			'account' => Auth::user()->account,
