@@ -5,67 +5,6 @@
  */
 class ProviderInvoiceController extends InvoiceController {
 
-    public function edit($publicId, $clone = false) {
-        $invoice = Invoice::scope($publicId)->withTrashed()->with('invitations', 'account.country', 'client.contacts', 'client.country', 'invoice_items')->firstOrFail();
-        $entityType = $invoice->getEntityType();
-
-        $contactIds = DB::table('invitations')
-                        ->join('contacts', 'contacts.id', '=', 'invitations.contact_id')
-                        ->where('invitations.invoice_id', '=', $invoice->id)
-                        ->where('invitations.account_id', '=', Auth::user()->account_id)
-                        ->where('invitations.deleted_at', '=', null)
-                        ->select('contacts.public_id')->lists('public_id');
-
-        if ($clone) {
-            $invoice->id = null;
-            $invoice->invoice_number = Auth::user()->account->getNextInvoiceNumber($invoice->is_quote);
-            $invoice->balance = $invoice->amount;
-            $method = 'POST';
-            $url = "{$entityType}s";
-        } else {
-            Utils::trackViewed($invoice->invoice_number . ' - ' . $invoice->client->getDisplayName(), $invoice->getEntityType());
-            $method = 'PUT';
-            $url = "{$entityType}s/provider/{$publicId}";
-        }
-
-        $invoice->invoice_date = Utils::fromSqlDate($invoice->invoice_date);
-        $invoice->due_date = Utils::fromSqlDate($invoice->due_date);
-        $invoice->start_date = Utils::fromSqlDate($invoice->start_date);
-        $invoice->end_date = Utils::fromSqlDate($invoice->end_date);
-        $invoice->is_pro = Auth::user()->isPro();
-
-        $data = array(
-            'entityType' => $entityType,
-            'showBreadcrumbs' => $clone,
-            'account' => $invoice->account,
-            'invoice' => $invoice,
-            'data' => false,
-            'method' => $method,
-            'invitationContactIds' => $contactIds,
-            'url' => $url,
-            'title' => trans("texts.edit_{$entityType}"),
-            'client' => $invoice->client,
-            'provider' => true);
-        $data = array_merge($data, self::getViewModel());
-
-        // Set the invitation link on the client's contacts
-        $clients = $data['clients'];
-        foreach ($clients as $client) {
-            if ($client->id == $invoice->client->id) {
-                foreach ($invoice->invitations as $invitation) {
-                    foreach ($client->contacts as $contact) {
-                        if ($invitation->contact_id == $contact->id) {
-                            $contact->invitation_link = $invitation->getLink();
-                        }
-                    }
-                }
-                break;
-            }
-        }
-
-        return View::make('invoices.edit', $data);
-    }
-
     public function create($clientPublicId = 0) {
         $client = null;
         $invoiceNumber = Auth::user()->account->getNextInvoiceNumber();

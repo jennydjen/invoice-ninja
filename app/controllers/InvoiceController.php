@@ -140,6 +140,7 @@ class InvoiceController extends \BaseController {
 	{
 		$invoice = Invoice::scope($publicId)->withTrashed()->with('invitations', 'account.country', 'client.contacts', 'client.country', 'invoice_items')->firstOrFail();
 		$entityType = $invoice->getEntityType();
+                $provider = $invoice->provider;    
 
   	$contactIds = DB::table('invitations')
 			->join('contacts', 'contacts.id', '=','invitations.contact_id')
@@ -160,7 +161,7 @@ class InvoiceController extends \BaseController {
 		{
 			Utils::trackViewed($invoice->invoice_number . ' - ' . $invoice->client->getDisplayName(), $invoice->getEntityType());
 			$method = 'PUT';
-			$url = "{$entityType}s/{$publicId}";
+			$url = "{$entityType}s/".($provider ? "provider/" : "")."{$publicId}";
 		}
 		
 		$invoice->invoice_date = Utils::fromSqlDate($invoice->invoice_date);
@@ -180,7 +181,7 @@ class InvoiceController extends \BaseController {
 				'url' => $url, 
 				'title' => trans("texts.edit_{$entityType}"),
 				'client' => $invoice->client,
-                                'provider' => false);
+                                'provider' => $provider);
 		$data = array_merge($data, self::getViewModel());		
 
 		// Set the invitation link on the client's contacts
