@@ -11,7 +11,7 @@
 	
 	@if ($invoice && $invoice->id)
 		<ol class="breadcrumb">
-			<li>{{ link_to(($entityType == ENTITY_QUOTE ? 'quotes' : 'invoices'), trans('texts.' . ($entityType == ENTITY_QUOTE ? 'quotes' : 'invoices'))) }}</li>
+			<li>{{ link_to(($entityType == ENTITY_QUOTE ? 'quotes' : ($provider ? 'invoices/provider' : 'invoices')), trans('texts.' . ($entityType == ENTITY_QUOTE ? 'quotes' : ($provider ? 'invoices.provider' : 'invoices.client')))) }}</li>
 			<li class='active'>{{ $invoice->invoice_number }}</li>
 		</ol>  
 	@endif
@@ -79,7 +79,7 @@
 				</div>
 				@if ($invoice && $invoice->recurring_invoice_id)
 					<div class="pull-right" style="padding-top: 6px">
-						Created by a {{ link_to('/invoices/'.$invoice->recurring_invoice_id, 'recurring invoice') }}
+						Created by a {{ link_to('/invoices/'.($provider ? 'provider/' : '').$invoice->recurring_invoice_id, 'recurring invoice') }}
 					</div>
 				@else 
 				<div data-bind="visible: invoice_status_id() < CONSTS.INVOICE_STATUS_SENT">
@@ -288,7 +288,7 @@
 						@if ($invoice && $entityType == ENTITY_QUOTE)			
 							<li class="divider"></li>
 							@if ($invoice->quote_invoice_id)
-								<li><a href="{{ URL::to("invoices/{$invoice->quote_invoice_id}/edit") }}">{{ trans("texts.view_invoice") }}</a></li>
+								<li><a href="{{ URL::to("invoices/".($provider ? 'provider/' : '')."{$invoice->quote_invoice_id}/edit") }}">{{ trans("texts.view_invoice") }}</a></li>
 							@else
 								<li><a href="javascript:onConvertClick()">{{ trans("texts.convert_to_invoice") }}</a></li>
 							@endif

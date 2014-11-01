@@ -28,6 +28,8 @@ return array(
 
   // invoice
   'invoice' => 'Invoice',
+  'invoices.provider' => 'Provider invoices',
+  'invoices.client' => 'Client invoices',
   'client' => 'Client',
   'invoice_date' => 'Invoice Date',
   'due_date' => 'Due Date',

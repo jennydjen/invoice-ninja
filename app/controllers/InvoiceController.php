@@ -179,7 +179,8 @@ class InvoiceController extends \BaseController {
 				'invitationContactIds' => $contactIds,
 				'url' => $url, 
 				'title' => trans("texts.edit_{$entityType}"),
-				'client' => $invoice->client);
+				'client' => $invoice->client,
+                                'provider' => false);
 		$data = array_merge($data, self::getViewModel());		
 
 		// Set the invitation link on the client's contacts
