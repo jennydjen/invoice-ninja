@@ -434,12 +434,12 @@ Event::listen('illuminate.query', function($query, $bindings, $time, $name)
 });
 */
 
+
 /*
 if (Auth::check() && Auth::user()->id === 1)
 {
   Auth::loginUsingId(1);
 }
 */
-
 
 
