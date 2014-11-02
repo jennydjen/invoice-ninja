@@ -181,7 +181,7 @@ class InvoiceController extends \BaseController {
 				'url' => $url, 
 				'title' => trans("texts.edit_{$entityType}"),
 				'client' => $invoice->client,
-                                'provider' => $provider);
+                                'provider' => $provider); // Ajout de ce paramètre pour permettre à la vue de savoir si c'est une facture Fournisseur ou client
 		$data = array_merge($data, self::getViewModel());		
 
 		// Set the invitation link on the client's contacts
@@ -207,7 +207,7 @@ class InvoiceController extends \BaseController {
 		return View::make('invoices.edit', $data);
 	}
 
-	public function create($clientPublicId = 0)
+	public function create($clientPublicId = 0, $provider = false)
 	{	
 		$client = null;
 		$invoiceNumber = Auth::user()->account->getNextInvoiceNumber();
@@ -225,7 +225,7 @@ class InvoiceController extends \BaseController {
 				'data' => Input::old('data'), 
 				'invoiceNumber' => $invoiceNumber,
 				'method' => 'POST', 
-				'url' => 'invoices', 
+				'url' => 'invoices'.($provider ? '/provider' : ''), 
 				'title' => trans('texts.new_invoice'),
 				'client' => $client);
 		$data = array_merge($data, self::getViewModel());				
@@ -269,7 +269,7 @@ class InvoiceController extends \BaseController {
 		return InvoiceController::save();
 	}
 
-	private function save($publicId = null)
+	protected function save($publicId = null, $provider = false)
 	{	
 		$action = Input::get('action');
 		$entityType = Input::get('entityType');
@@ -287,7 +287,7 @@ class InvoiceController extends \BaseController {
 		{					
 			Session::flash('error', trans('texts.invoice_error'));
 
-			return Redirect::to("{$entityType}s/create")
+                        return Redirect::to("{$entityType}s/".($provider ? "provider/" : "")."create")
 				->withInput()->withErrors($errors);
 		} 
 		else 
@@ -299,6 +299,7 @@ class InvoiceController extends \BaseController {
 						
 			$invoiceData = (array) $invoice;
 			$invoiceData['client_id'] = $client->id;
+                        $invoiceData['provider'] = $provider;
 			$invoice = $this->invoiceRepo->save($publicId, $invoiceData, $entityType);
 			
 			$account = Auth::user()->account;
@@ -378,7 +379,7 @@ class InvoiceController extends \BaseController {
 				Session::flash('message', $message);
 			}
 
-			$url = "{$entityType}s/" . $invoice->public_id . '/edit';
+                        $url = "{$entityType}s/".($provider ? "provider/": ""). $invoice->public_id . '/edit';
 			return Redirect::to($url);
 		}
 	}
