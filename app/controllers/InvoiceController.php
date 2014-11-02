@@ -72,7 +72,7 @@ class InvoiceController extends \BaseController {
     						'.trans('texts.select').' <span class="caret"></span>
   							</button>
   							<ul class="dropdown-menu" role="menu">
-						    <li><a href="' . URL::to('invoices/'.$model->public_id.'/edit') . '">'.trans('texts.edit_invoice').'</a></li>
+						    <li><a href="' . URL::to('invoices/'.($model->provider ? "provider/" : "").$model->public_id.'/edit') . '">'.trans('texts.edit_invoice').'</a></li>
 						    <li class="divider"></li>
 						    <li><a href="javascript:archiveEntity(' . $model->public_id . ')">'.trans('texts.archive_invoice').'</a></li>
 						    <li><a href="javascript:deleteEntity(' . $model->public_id . ')">'.trans('texts.delete_invoice').'</a></li>						    
@@ -282,6 +282,9 @@ class InvoiceController extends \BaseController {
 		$input = json_decode(Input::get('data'));					
 		
 		$invoice = $input->invoice;
+                if($publicId != null && $invoice->provider){
+                    $provider = true;
+                }
 
 		if ($errors = $this->invoiceRepo->getErrors($invoice))
 		{					

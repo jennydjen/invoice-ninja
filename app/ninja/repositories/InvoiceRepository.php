@@ -95,7 +95,7 @@ class InvoiceRepository
       $table->addColumn('checkbox', function($model) { return '<input type="checkbox" name="ids[]" value="' . $model->public_id . '">'; });
     }
     
-    $table->addColumn("invoice_number", function($model) use ($entityType) { return link_to("{$entityType}s/" . $model->public_id . '/edit', $model->invoice_number); });
+    $table->addColumn("invoice_number", function($model) use ($entityType) { return link_to("{$entityType}s/".($model->provider ? "provider/" : ""). $model->public_id . '/edit', $model->invoice_number); });
 
     if (!$clientPublicId) 
     {
@@ -144,7 +144,7 @@ class InvoiceRepository
             {
               if ($model->quote_invoice_id)
               {
-                $str .= '<li><a href="' .  \URL::to("invoices/{$model->quote_invoice_id}/edit") . '">' . trans("texts.view_invoice") . '</a></li>';
+                $str .= '<li><a href="' .  \URL::to("invoices/".($model->provider ? "provider/" : "")."{$model->quote_invoice_id}/edit") . '">' . trans("texts.view_invoice") . '</a></li>';
               }
             }
 
